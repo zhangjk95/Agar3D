@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agar3D.CSharp", "Agar3D.CSharp.csproj", "{5AB2F3BD-0541-61A7-36B9-23E2D00AA9DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agar3D.CSharp.Editor", "Agar3D.CSharp.Editor.csproj", "{D76CAAA8-519D-571E-FDE3-25882C946DC7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5AB2F3BD-0541-61A7-36B9-23E2D00AA9DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AB2F3BD-0541-61A7-36B9-23E2D00AA9DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AB2F3BD-0541-61A7-36B9-23E2D00AA9DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AB2F3BD-0541-61A7-36B9-23E2D00AA9DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D76CAAA8-519D-571E-FDE3-25882C946DC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D76CAAA8-519D-571E-FDE3-25882C946DC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D76CAAA8-519D-571E-FDE3-25882C946DC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D76CAAA8-519D-571E-FDE3-25882C946DC7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
