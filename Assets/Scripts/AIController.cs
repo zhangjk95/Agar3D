@@ -5,7 +5,7 @@ using System.Linq;
 
 public class AIController : Controller {
 
-    IEnumerable<Transform> balls, otherballs;
+    IEnumerable<BallManager> balls, otherballs;
 
 	void Start () {
 
@@ -13,14 +13,19 @@ public class AIController : Controller {
 	
 	void Update () {
         updateBalls();
+        foreach (var ball in balls)
+        {
+            Debug.Log(ball.position); //球的位置
+            Debug.Log(ball.size); //球的大小
+        }
         Move(new Vector3(0, 0, 0), 100f);
 	}
 
     void updateBalls()
     {
-        balls = transform.GetComponentsInChildren<BallManager>().Select((ballManager) => ballManager.transform);
+        balls = transform.GetComponentsInChildren<BallManager>();
         otherballs = GameObject.FindGameObjectsWithTag("Player")
             .Where((player) => player != gameObject)
-            .SelectMany((player) => player.transform.GetComponentsInChildren<BallManager>().Select((ballManager) => ballManager.transform));
+            .SelectMany((player) => player.transform.GetComponentsInChildren<BallManager>());
     }
 }
