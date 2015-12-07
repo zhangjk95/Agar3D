@@ -42,7 +42,7 @@ public class BallManager : MonoBehaviour {
         set 
         { 
             selfColliderEnabled = value;
-            GetComponent<SphereCollider>().isTrigger = !value;
+            Physics.IgnoreLayerCollision(gameObject.layer, gameObject.layer, !value);
         }
     }
 
