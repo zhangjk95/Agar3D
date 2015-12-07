@@ -52,6 +52,11 @@ public class BallManager : MonoBehaviour {
         set { movementEnabled = value; }
     }
 
+    public Vector3 position
+    {
+        get { return transform.position; }
+    }
+
     private float radius
     {
         get
