@@ -1,23 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 public class CameraFollow : MonoBehaviour {
-
-    /*public Transform target;
-    public float smoothing = 5;
-
-    Vector3 offset;
-
-    void Start()
-    {
-        offset = transform.position - target.position;
-    }
-
-    void FixedUpdate()
-    {
-        Vector3 targetCamPos = target.position + offset;
-        transform.position = Vector3.Lerp(transform.position, targetCamPos, smoothing * Time.deltaTime);
-    }*/
 
     public Transform Target;
     public float Distance = 100f;
@@ -33,10 +18,12 @@ public class CameraFollow : MonoBehaviour {
 
     void Awake()
     {
+        FindTarget();
     }
 
     void LateUpdate()
     {
+        FindTarget();
         if (Target != null)
         {
             x += (float)(Input.GetAxis("Horizontal") * xSpeed * 0.02f);
@@ -52,5 +39,12 @@ public class CameraFollow : MonoBehaviour {
             transform.rotation = rotation;
             transform.position = position;
         }
+    }
+
+    void FindTarget()
+    {
+        var ballManagers = transform.parent.GetComponentsInChildren<BallManager>();
+        var followBall = ballManagers.Where((ballManager) => ballManagers.All((other) => ballManager.number <= other.number)).First();
+        Target = followBall.transform;
     }
 }
