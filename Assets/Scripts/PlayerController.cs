@@ -5,12 +5,10 @@ public class PlayerController : Controller {
 
     float camRayLength = 100f;
     int floorMask;
-    BallManager ballManager;
 
     void Awake()
     {
         floorMask = LayerMask.GetMask("Floor");
-        ballManager = GetComponent<BallManager>();
     }
 
     void Update()
@@ -18,10 +16,6 @@ public class PlayerController : Controller {
         if (Input.GetKeyDown("space"))
         {
             Split();
-        }
-        else if (Input.GetKeyDown("r"))
-        {
-            ballManager.needUpdate = true;
         }
     }
 
@@ -32,28 +26,30 @@ public class PlayerController : Controller {
 
     void Move()
     {
-        var playerToMouse = getPlayerToMouse();
-        ballManager.Move(playerToMouse, playerToMouse.magnitude);
+        var mousePoint = getMousePoint();
+        if (mousePoint != null)
+        {
+            Move(mousePoint.Value);
+        }
     }
 
     void Split()
     {
-        var playerToMouse = getPlayerToMouse();
-        if (playerToMouse != Vector3.zero)
+        var mousePoint = getMousePoint();
+        if (mousePoint != null)
         {
-            ballManager.Split(playerToMouse);
+            Split(mousePoint.Value);
         }
     }
 
-    Vector3 getPlayerToMouse()
+    Vector3? getMousePoint()
     {
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit floorHit;
         if (Physics.Raycast(camRay, out floorHit, camRayLength, floorMask))
         {
-            Vector3 playerToMouse = floorHit.point - transform.position;
-            return playerToMouse;
+            return floorHit.point;
         }
-        return Vector3.zero;
+        return null;
     }
 }

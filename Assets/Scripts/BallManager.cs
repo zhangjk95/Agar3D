@@ -15,7 +15,6 @@ public class BallManager : MonoBehaviour {
     public float initialMovementTimer = 1;
     public float initialColliderTimer = 1;
     public float minSize = 16;
-    public Controller controller;
 
     private GameObject gameManager;
     private PickupManager pickupManager;
@@ -83,7 +82,6 @@ public class BallManager : MonoBehaviour {
         transform.localScale = new Vector3(displayRadius, displayRadius, displayRadius);
         cloth.GetComponent<Cloth>().enabled = true;
         GetComponent<SphereCollider>().enabled = true;
-        controller.enabled = true;
         SelfColliderEnabled = false;
         MovementEnabled = false;
     }
@@ -198,10 +196,6 @@ public class BallManager : MonoBehaviour {
             direction *= velocity;
             rigidBody.velocity = direction;
             rigidBody.angularVelocity = Vector3.zero;
-        }
-        else
-        {
-            Debug.Log("Movement disabled");
         }
     }
 
