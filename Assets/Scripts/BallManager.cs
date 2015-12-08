@@ -208,17 +208,20 @@ public class BallManager : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Pick Up"))
+        lock (gameManager)
         {
-            pickupManager.count--;
-            Destroy(other.gameObject);
-            ShowEatAnimation();
-
-            size += incSize;
-
-            if (radius - displayRadius > 0.5)
+            if (!(other.gameObject == null) && other.gameObject.CompareTag("Pick Up"))
             {
-                ShowResizeAnimation();
+                pickupManager.count--;
+                Destroy(other.gameObject);
+                ShowEatAnimation();
+
+                size += incSize;
+
+                if (radius - displayRadius > 0.5)
+                {
+                    ShowResizeAnimation();
+                }
             }
         }
     }
