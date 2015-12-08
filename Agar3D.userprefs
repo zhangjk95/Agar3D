@@ -1,11 +1,13 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GameController.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/BallManager.cs">
     <Files>
-      <File FileName="Assets/Scripts/PlayerSplit.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/GameController.cs" Line="22" Column="4" />
-      <File FileName="../NightmareShooter/Assets/Scripts/Managers/EnemyManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/PickupManager.cs" Line="18" Column="2" />
+      <File FileName="Assets/Scripts/AIController.cs" Line="40" Column="14" />
+      <File FileName="Assets/Scripts/PickupManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/PlayerController.cs" Line="24" Column="16" />
+      <File FileName="Assets/Scripts/PlayerManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Controller.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/BallManager.cs" Line="106" Column="13" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
