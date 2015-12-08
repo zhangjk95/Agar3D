@@ -19,9 +19,6 @@ public class AIController : Controller {
 	
 	void Update () {
         updateBalls();
-<<<<<<< HEAD
-        Move(new Vector3(0, 0, 0), 100f);
-=======
 		SmallestBallSize = 100000;
         foreach (var ball in balls) {
 			if(ball.size < SmallestBallSize) {
@@ -52,7 +49,6 @@ public class AIController : Controller {
 			Move (new Vector3(Random.Range(1, 30), Random.Range(1, 30), Random.Range(1, 30)), 100f);
 			MovementTimer = 0;
 		}
->>>>>>> afcd3989022d46aae83663813785011ddd8ea880
 	}
 
     void updateBalls()
