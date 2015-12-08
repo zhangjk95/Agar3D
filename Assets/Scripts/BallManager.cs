@@ -146,13 +146,14 @@ public class BallManager : MonoBehaviour {
             transform.localScale = new Vector3(displayRadius, displayRadius, displayRadius);
             cloth.GetComponent<Cloth>().enabled = true;
             var velocity = rigidBody.velocity;
-            Destroy(playerBall);
-            GameObject newPlayer = Instantiate(playerBall);
-            newPlayer.transform.SetParent(playerBall.transform.parent);
+			Destroy(gameObject);
+			GameObject newPlayer = Instantiate(gameObject);
+			newPlayer.transform.SetParent(gameObject.transform.parent);
             newPlayer.GetComponent<BallManager>().needUpdate = false;
             newPlayer.GetComponent<BallManager>().enabled = true;
             newPlayer.GetComponent<BallManager>().eatDirection = eatDirection;
             newPlayer.GetComponent<Rigidbody>().velocity = velocity;
+			newPlayer.transform.position = position;
         }
     }
 
@@ -217,6 +218,7 @@ public class BallManager : MonoBehaviour {
 
             GameObject newPlayer = Instantiate(playerBall);
             newPlayer.transform.SetParent(player);
+			newPlayer.transform.position = position;
             var newBallManager = newPlayer.GetComponent<BallManager>();
             newBallManager.movementTimer = initialMovementTimer;
             newBallManager.colliderTimer = initialColliderTimer;
