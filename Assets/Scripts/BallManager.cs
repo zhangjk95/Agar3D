@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Linq;
 
@@ -15,6 +16,8 @@ public class BallManager : MonoBehaviour {
     public float initialMovementTimer = 1;
     public float initialColliderTimer = 1;
     public float minSize = 16;
+    public float splitTime = 5;
+    public float mergeDuration = 5;
 
     private GameObject gameManager;
     private PickupManager pickupManager;
@@ -31,10 +34,16 @@ public class BallManager : MonoBehaviour {
     public bool movementEnabled;
     public bool selfColliderEnabled;
     public Vector3 eatDirection;
+    public Vector3 positionBeforeMerge;
+    public float distanceBeforeMerge;
     public float movementTimer;
     public float colliderTimer;
     public float eatTimer;
     public float resizeTimer;
+    public float splitTimer;
+    public float mergeTimer;
+    public int splitFrom = -1;
+    public bool merged = true;
 
     public bool SelfColliderEnabled
     {
@@ -55,6 +64,7 @@ public class BallManager : MonoBehaviour {
     public Vector3 position
     {
         get { return transform.position; }
+        //set { transform.position = value; }
     }
 
     private float radius
@@ -65,7 +75,6 @@ public class BallManager : MonoBehaviour {
         }
     }
 
-    // Use this for initialization
     void Start()
     {
         if (transform.parent.GetComponentsInChildren<BallManager>().Any((other) => other.number == number && other.size > size))
@@ -89,9 +98,9 @@ public class BallManager : MonoBehaviour {
         GetComponent<SphereCollider>().enabled = true;
         SelfColliderEnabled = false;
         MovementEnabled = false;
+        if (splitFrom == -1) playerManager.balls[0] = true;
     }
 
-    // Update is called once per frame
     void Update()
     {
         movementTimer -= Time.deltaTime;
@@ -135,6 +144,46 @@ public class BallManager : MonoBehaviour {
             needUpdate = true;
         }
 
+        if (merged && splitFrom != -1)
+        {
+            var mergedBall = getBallByNumber(splitFrom);
+
+            splitTimer -= Time.deltaTime;
+            if (splitTimer < 0 && mergeTimer < 0)
+            {
+                mergeTimer = mergeDuration;
+                GetComponent<SphereCollider>().isTrigger = true;
+                MovementEnabled = false;
+                positionBeforeMerge = position;
+                distanceBeforeMerge = (position - mergedBall.position).magnitude;
+            }
+
+            mergeTimer -= Time.deltaTime;
+            if (splitTimer < 0)
+            {
+                if (mergeTimer >= 0)
+                {
+                    var distance = Mathf.Lerp(distanceBeforeMerge, 0, (mergeDuration - mergeTimer) / mergeDuration);
+                    transform.position = new Ray(mergedBall.position, positionBeforeMerge - mergedBall.position).GetPoint(distance);
+                }
+                else
+                {
+                    mergedBall.size += size;
+                    mergedBall.merged = true;
+                    if (mergedBall.radius - mergedBall.displayRadius > 0.5)
+                    {
+                        mergedBall.ShowResizeAnimation();
+                    }
+                    lock (playerManager)
+                    {
+                        playerManager.balls[number] = false;
+                        playerManager.count--;
+                        Destroy(gameObject);
+                    }
+                }
+            }
+        }      
+
         transform.rotation = new Quaternion(0, 0, 0, 0);
     }
 
@@ -153,6 +202,7 @@ public class BallManager : MonoBehaviour {
             newPlayer.GetComponent<BallManager>().enabled = true;
             newPlayer.GetComponent<BallManager>().eatDirection = eatDirection;
             newPlayer.GetComponent<Rigidbody>().velocity = velocity;
+            newPlayer.transform.position = position;
         }
     }
 
@@ -177,7 +227,7 @@ public class BallManager : MonoBehaviour {
     {
         charge.GetComponent<ParticleSystem>().Clear(true);
         charge.GetComponent<ParticleSystem>().Play(true);
-        eatDirection = Quaternion.Euler(0, Random.value * 360, 0) * (new Vector3(1, 1, 1));
+        eatDirection = Quaternion.Euler(0, UnityEngine.Random.value * 360, 0) * (new Vector3(1, 1, 1));
         eatTimer = eatDuration;
         charge.SetActive(true);
     }
@@ -189,6 +239,26 @@ public class BallManager : MonoBehaviour {
         resizeTimer = resizeDuration;
         resizing = true;
         cloth.GetComponent<Cloth>().enabled = false;
+    }
+
+    BallManager getBallByNumber(int number)
+    {
+        lock (playerManager)
+        {
+            return player.GetComponentsInChildren<BallManager>().First((ball) => ball.number == number);
+        }  
+    }
+
+    int getNewBallNumber()
+    {
+        lock (playerManager)
+        {
+            for (int i = 0; i < playerManager.maxCount; i++)
+            {
+                if (!playerManager.balls[i]) return i;
+            }
+            return -1;
+        }
     }
 
     public void Move(Vector3 direction, float velocity)
@@ -208,21 +278,29 @@ public class BallManager : MonoBehaviour {
     {
         lock (playerManager)
         {
+            if (player.GetComponentsInChildren<BallManager>().Any((ball) => ball.mergeTimer > 0)) return;
             if (playerManager.count >= playerManager.maxCount || size / 2 < minSize) return;
 
             direction.y = 0;
             direction.Normalize();
 
             size /= 2;
+            merged = false;
 
             GameObject newPlayer = Instantiate(playerBall);
             newPlayer.transform.SetParent(player);
+            newPlayer.transform.position = position;
             var newBallManager = newPlayer.GetComponent<BallManager>();
             newBallManager.movementTimer = initialMovementTimer;
             newBallManager.colliderTimer = initialColliderTimer;
             newBallManager.MovementEnabled = false;
             newBallManager.SelfColliderEnabled = false;
-            newBallManager.number = playerManager.count++;
+            newBallManager.number = getNewBallNumber();
+            playerManager.balls[newBallManager.number] = true;
+            playerManager.count++;
+            newBallManager.splitFrom = number;
+            newBallManager.merged = true;
+            newBallManager.splitTimer = splitTime;
             newPlayer.GetComponent<Rigidbody>().velocity = direction * initialVelocity;
             newBallManager.enabled = true;
 

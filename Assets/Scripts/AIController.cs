@@ -13,11 +13,6 @@ public class AIController : Controller {
 	
 	void Update () {
         updateBalls();
-        foreach (var ball in balls)
-        {
-            Debug.Log(ball.position); //球的位置
-            Debug.Log(ball.size); //球的大小
-        }
         Move(new Vector3(0, 0, 0), 100f);
 	}
 
