@@ -14,6 +14,7 @@ public class AIController : Controller {
 	void Start () {
 		IsTargetBallsinVision = false;
 		MovementTimer = 0;
+		Move (new Vector3(Random.Range(1, 30), Random.Range(1, 30), Random.Range(1, 30)), 100f);
 	}
 	
 	void Update () {
@@ -25,8 +26,7 @@ public class AIController : Controller {
 				SmallestBall = ball;
 			}
         }
-        //Move(new Vector3(0, 0, 0), 100f);
-		Split (new Vector3 (0.2f, 0, 0));
+
 		IsTargetBallsinVision = false;
 		foreach (var otherball in otherballs) {
 			if(Vector3.Distance(otherball.position, SmallestBall.position) < AIVisionField) {
@@ -34,10 +34,10 @@ public class AIController : Controller {
 					Move ((SmallestBall.position - otherball.position) * 5, 100f);
 					IsTargetBallsinVision = true;
 				}
-				if(otherball.size < SmallestBall.size) {
+				else if(otherball.size < SmallestBall.size) {
 					Move ((otherball.position - SmallestBall.position) * 5, 100f);
 					if(otherball.size < SmallestBall.size/2) {
-						Split (otherball.position - SmallestBall.position);
+						Split (SmallestBall.position);
 					}
 					IsTargetBallsinVision = true;
 				}
@@ -45,7 +45,7 @@ public class AIController : Controller {
 			}
 		}
 		MovementTimer += Time.deltaTime;
-		if (!IsTargetBallsinVision && MovementTimer > 3) {
+		if (!IsTargetBallsinVision && MovementTimer > 1) {
 			Move (new Vector3(Random.Range(1, 30), Random.Range(1, 30), Random.Range(1, 30)), 100f);
 			MovementTimer = 0;
 		}
