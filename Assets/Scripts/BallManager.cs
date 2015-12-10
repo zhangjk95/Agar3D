@@ -235,6 +235,7 @@ public class BallManager : MonoBehaviour {
                 if (otherBall.transform.parent != player && radius > other.GetComponent<BallManager>().radius + (position - otherBall.position).magnitude)
                 {
                     int end = otherBall.adjustNumber();
+                    otherBall.number = -1;
                     if (end != -1 && otherBall.ballExists(end))
                     {
                         otherBall.getBallByNumber(end).merged--;
@@ -267,6 +268,7 @@ public class BallManager : MonoBehaviour {
             tmp.number = number;
             tmp.splitTimer = splitTimer;
             tmp.splitFrom = splitFrom;
+            tmp.merged = merged;
             return end;
         }
         else
