@@ -21,9 +21,9 @@ public class BallManager : MonoBehaviour {
 
     private GameObject gameManager;
     private PickupManager pickupManager;
-    private Transform player;
+    public Transform player;
     private GameObject playerBall;
-    private PlayerManager playerManager;
+    public PlayerManager playerManager;
     private Rigidbody rigidBody;
     private GameObject cloth;
     private GameObject charge;
@@ -144,7 +144,7 @@ public class BallManager : MonoBehaviour {
             needUpdate = true;
         }
 
-        if (merged && splitFrom != -1)
+        if (merged && splitFrom != -1 && playerManager.balls[splitFrom])
         {
             var mergedBall = getBallByNumber(splitFrom);
 
@@ -182,7 +182,7 @@ public class BallManager : MonoBehaviour {
                     }
                 }
             }
-        }      
+        }
 
         transform.rotation = new Quaternion(0, 0, 0, 0);
     }
@@ -221,6 +221,34 @@ public class BallManager : MonoBehaviour {
                 if (radius - displayRadius > 0.5)
                 {
                     ShowResizeAnimation();
+                }
+            }
+        }
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        lock (gameManager)
+        {
+            if (!(other.gameObject == null) && other.gameObject.CompareTag("Player Ball"))
+            {
+                var otherBall = other.GetComponent<BallManager>();
+                if (otherBall.transform.parent != player && radius > other.GetComponent<BallManager>().radius + (position - otherBall.position).magnitude)
+                {
+                    otherBall.playerManager.balls[otherBall.number] = false;
+                    otherBall.playerManager.count--;
+                    if (otherBall.playerManager.count == 0)
+                    {
+                        otherBall.player.gameObject.SetActive(false);
+                    }
+                    Destroy(other.gameObject);
+
+                    size += otherBall.size;
+
+                    if (radius - displayRadius > 0.5)
+                    {
+                        ShowResizeAnimation();
+                    }
                 }
             }
         }
