@@ -43,7 +43,7 @@ public class BallManager : MonoBehaviour {
     public float splitTimer;
     public float mergeTimer;
     public int splitFrom = -1;
-    public bool merged = true;
+    public int merged = 0;
 
     public bool SelfColliderEnabled
     {
@@ -98,7 +98,6 @@ public class BallManager : MonoBehaviour {
         GetComponent<SphereCollider>().enabled = true;
         SelfColliderEnabled = false;
         MovementEnabled = false;
-        if (splitFrom == -1) playerManager.balls[0] = true;
     }
 
     void Update()
@@ -144,7 +143,7 @@ public class BallManager : MonoBehaviour {
             needUpdate = true;
         }
 
-        if (merged && splitFrom != -1 && playerManager.balls[splitFrom])
+        if (merged == 0 && splitFrom != -1 && ballExists(splitFrom))
         {
             var mergedBall = getBallByNumber(splitFrom);
 
@@ -169,14 +168,13 @@ public class BallManager : MonoBehaviour {
                 else
                 {
                     mergedBall.size += size;
-                    mergedBall.merged = true;
+                    mergedBall.merged--;
                     if (mergedBall.radius - mergedBall.displayRadius > 0.5)
                     {
                         mergedBall.ShowResizeAnimation();
                     }
                     lock (playerManager)
                     {
-                        playerManager.balls[number] = false;
                         playerManager.count--;
                         Destroy(gameObject);
                     }
@@ -233,9 +231,14 @@ public class BallManager : MonoBehaviour {
             if (!(other.gameObject == null) && other.gameObject.CompareTag("Player Ball"))
             {
                 var otherBall = other.GetComponent<BallManager>();
+                if (otherBall.player.GetComponentsInChildren<BallManager>().Any((ball) => ball.mergeTimer > 0)) return;
                 if (otherBall.transform.parent != player && radius > other.GetComponent<BallManager>().radius + (position - otherBall.position).magnitude)
                 {
-                    otherBall.playerManager.balls[otherBall.number] = false;
+                    int end = otherBall.adjustNumber();
+                    if (end != -1 && otherBall.ballExists(end))
+                    {
+                        otherBall.getBallByNumber(end).merged--;
+                    }
                     otherBall.playerManager.count--;
                     if (otherBall.playerManager.count == 0)
                     {
@@ -251,6 +254,24 @@ public class BallManager : MonoBehaviour {
                     }
                 }
             }
+        }
+    }
+
+    int adjustNumber()
+    {
+        var tmp = player.GetComponentsInChildren<BallManager>().FirstOrDefault((ball) => ball.splitFrom == number &&
+            !player.GetComponentsInChildren<BallManager>().Any((otherBall) => otherBall.splitFrom == number && otherBall.merged > ball.merged));
+        if (tmp != null)
+        {            
+            int end = tmp.adjustNumber();
+            tmp.number = number;
+            tmp.splitTimer = splitTimer;
+            tmp.splitFrom = splitFrom;
+            return end;
+        }
+        else
+        {
+            return splitFrom;
         }
     }
 
@@ -272,11 +293,19 @@ public class BallManager : MonoBehaviour {
         cloth.GetComponent<Cloth>().enabled = false;
     }
 
-    BallManager getBallByNumber(int number)
+    public BallManager getBallByNumber(int number)
     {
         lock (playerManager)
         {
             return player.GetComponentsInChildren<BallManager>().First((ball) => ball.number == number);
+        }  
+    }
+
+    bool ballExists(int number)
+    {
+        lock (playerManager)
+        {
+            return player.GetComponentsInChildren<BallManager>().Any((ball) => ball.number == number);
         }  
     }
 
@@ -286,7 +315,7 @@ public class BallManager : MonoBehaviour {
         {
             for (int i = 0; i < playerManager.maxCount; i++)
             {
-                if (!playerManager.balls[i]) return i;
+                if (!ballExists(i)) return i;
             }
             return -1;
         }
@@ -316,7 +345,7 @@ public class BallManager : MonoBehaviour {
             direction.Normalize();
 
             size /= 2;
-            merged = false;
+            merged++;
 
             GameObject newPlayer = Instantiate(playerBall);
             newPlayer.transform.SetParent(player);
@@ -327,10 +356,9 @@ public class BallManager : MonoBehaviour {
             newBallManager.MovementEnabled = false;
             newBallManager.SelfColliderEnabled = false;
             newBallManager.number = getNewBallNumber();
-            playerManager.balls[newBallManager.number] = true;
             playerManager.count++;
             newBallManager.splitFrom = number;
-            newBallManager.merged = true;
+            newBallManager.merged = 0;
             newBallManager.splitTimer = splitTime;
             newPlayer.GetComponent<Rigidbody>().velocity = direction * initialVelocity;
             newBallManager.enabled = true;
