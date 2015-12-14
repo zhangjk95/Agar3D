@@ -44,6 +44,7 @@ public class BallManager : MonoBehaviour {
     public float mergeTimer;
     public int splitFrom = -1;
     public int merged = 0;
+    public bool Enabled = true;
 
     public bool SelfColliderEnabled
     {
@@ -77,7 +78,7 @@ public class BallManager : MonoBehaviour {
 
     void Start()
     {
-        if (transform.parent.GetComponentsInChildren<BallManager>().Any((other) => other.number == number && other.size > size))
+        if (transform.parent.GetComponentsInChildren<BallManager>().Any((other) => other.number == number && other.size > size && other.Enabled))
         {
             Destroy(gameObject);
             return;

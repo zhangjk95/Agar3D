@@ -85,6 +85,8 @@
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\PlayerManager.cs" />
     <Compile Include="Assets\Scripts\Rotator.cs" />
+    <Compile Include="Assets\Scripts\ShelterGenerator.cs" />
+    <Compile Include="Assets\ShelterManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\External Assets\Simple Particle Ribbon\readme_Simple_Particle_Ribbon.txt" />
