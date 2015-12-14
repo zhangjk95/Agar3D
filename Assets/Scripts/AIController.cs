@@ -17,17 +17,17 @@ public class AIController : Controller {
 	private float MovementTimer;
 	private float AIJudgeTimer;
 	private GameObject[] Pickups;
-    public float deltaTime = 1f;
+    //public float deltaTime = 1f;
 
 	void Start () {
 		IsTargetBallsinVision = false;
 		IsPickUpinVision = false;
 		MovementTimer = 0;
 		AIJudgeTimer = 0;
-        InvokeRepeating("run", deltaTime, deltaTime);
+        //InvokeRepeating("run", deltaTime, deltaTime);
 	}
 	
-	void run () {
+	void Update () {
         if (!isActiveAndEnabled) return;
         updateBalls();
 		SmallestBallSize = 100000;
@@ -70,7 +70,7 @@ public class AIController : Controller {
 				Move (Persue.position, 100f);
 				if(Persue.size < SmallestBall.size/2) {
 					if(Vector3.Distance(Persue.position, SmallestBall.position) < SplitRange) {
-                        AIJudgeTimer += deltaTime;
+                        AIJudgeTimer += Time.deltaTime;
 						if(AIJudgeTimer > AIJudgeTime) {
 							Split (Persue.position);
 							AIJudgeTimer = 0;
@@ -95,7 +95,7 @@ public class AIController : Controller {
 		}
 
 
-		MovementTimer += deltaTime;
+        MovementTimer += Time.deltaTime;
 		if (!IsPickUpinVision && !IsTargetBallsinVision && MovementTimer > Random.Range(27, 34)/10) {
 			Move (new Vector3(Random.Range(- FloorScale/2, FloorScale/2), Random.Range(- FloorScale/2, FloorScale/2), 0), 100f);
 			MovementTimer = 0;
