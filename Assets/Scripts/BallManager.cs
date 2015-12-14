@@ -11,8 +11,7 @@ public class BallManager : MonoBehaviour {
     public float resizeDuration = 0.1f;
     public float eatDuration = 2;
     public bool needUpdate = false;
-    public float maxVelocity = 10;
-    public float initialVelocity = 30;
+    public float maxVelocityK = 10;
     public float initialMovementTimer = 1;
     public float initialColliderTimer = 1;
     public float minSize = 16;
@@ -68,11 +67,27 @@ public class BallManager : MonoBehaviour {
         //set { transform.position = value; }
     }
 
-    private float radius
+    public float radius
     {
         get
         {
-            return Mathf.Pow(size, 1f / 3);
+            return Mathf.Sqrt(size);
+        }
+    }
+
+    public float maxVelocity
+    {
+        get
+        {
+            return maxVelocityK * Mathf.Pow(size, -1.0f / 4.5f) * 50 / 40;
+        }
+    }
+
+    public float initialVelocity
+    {
+        get
+        {
+            return maxVelocity * 3;
         }
     }
 
@@ -233,7 +248,7 @@ public class BallManager : MonoBehaviour {
             {
                 var otherBall = other.GetComponent<BallManager>();
                 if (otherBall.player.GetComponentsInChildren<BallManager>().Any((ball) => ball.mergeTimer > 0)) return;
-                if (otherBall.transform.parent != player && radius > other.GetComponent<BallManager>().radius + (position - otherBall.position).magnitude)
+                if (otherBall.transform.parent != player && radius > otherBall.radius + Vector3.Distance(position, otherBall.position) && radius -otherBall.radius > 0.5)
                 {
                     int end = otherBall.adjustNumber();
                     otherBall.number = -1;
@@ -342,7 +357,7 @@ public class BallManager : MonoBehaviour {
         lock (playerManager)
         {
             if (player.GetComponentsInChildren<BallManager>().Any((ball) => ball.mergeTimer > 0)) return;
-            if (playerManager.count >= playerManager.maxCount || size / 2 < minSize) return;
+            if (playerManager.count >= playerManager.maxCount || size < minSize) return;
 
             direction.y = 0;
             direction.Normalize();

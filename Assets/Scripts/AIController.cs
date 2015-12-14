@@ -17,15 +17,18 @@ public class AIController : Controller {
 	private float MovementTimer;
 	private float AIJudgeTimer;
 	private GameObject[] Pickups;
+    public float deltaTime = 1f;
 
 	void Start () {
 		IsTargetBallsinVision = false;
 		IsPickUpinVision = false;
 		MovementTimer = 0;
 		AIJudgeTimer = 0;
+        InvokeRepeating("run", deltaTime, deltaTime);
 	}
 	
-	void Update () {
+	void run () {
+        if (!isActiveAndEnabled) return;
         updateBalls();
 		SmallestBallSize = 100000;
         foreach (var ball in balls) {
@@ -49,14 +52,15 @@ public class AIController : Controller {
 		}
 
 		if (Escape) {
-			Move ((SmallestBall.position - Escape.position) * 5, 100f);
+			Move ((SmallestBall.position - Escape.position) + SmallestBall.position, 100f);
 		}
 
 		else  {
 			float MinDistance = 100000, Temp_Distance = 0;
 			foreach (var otherball in otherballs) {
 				Temp_Distance = Vector3.Distance (otherball.position, SmallestBall.position);
-				if (Temp_Distance < AIVisionField && otherball.size < SmallestBall.size && Temp_Distance < MinDistance) {
+                if (Temp_Distance < AIVisionField && SmallestBall.radius - otherball.radius > 0.5 && Temp_Distance < MinDistance)
+                {
 					MinDistance = Temp_Distance;
 					Persue = otherball;
 					IsTargetBallsinVision = true;
@@ -66,7 +70,7 @@ public class AIController : Controller {
 				Move (Persue.position, 100f);
 				if(Persue.size < SmallestBall.size/2) {
 					if(Vector3.Distance(Persue.position, SmallestBall.position) < SplitRange) {
-						AIJudgeTimer += Time.deltaTime;
+                        AIJudgeTimer += deltaTime;
 						if(AIJudgeTimer > AIJudgeTime) {
 							Split (Persue.position);
 							AIJudgeTimer = 0;
@@ -91,7 +95,7 @@ public class AIController : Controller {
 		}
 
 
-		MovementTimer += Time.deltaTime;
+		MovementTimer += deltaTime;
 		if (!IsPickUpinVision && !IsTargetBallsinVision && MovementTimer > Random.Range(27, 34)/10) {
 			Move (new Vector3(Random.Range(- FloorScale/2, FloorScale/2), Random.Range(- FloorScale/2, FloorScale/2), 0), 100f);
 			MovementTimer = 0;
