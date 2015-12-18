@@ -62,6 +62,8 @@
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\PlayerManager.cs" />
      <Compile Include="Assets\Scripts\Rotator.cs" />
+     <Compile Include="Assets\Scripts\ShelterGenerator.cs" />
+     <Compile Include="Assets\Scripts\ShelterManager.cs" />
      <None Include="Assets\External Assets\Standard Assets\Environment\Water\Water4\Shaders\FXWater4Simple.shader" />
      <None Include="Assets\External Assets\Standard Assets\Environment\Water\Water\Shaders\FXWaterPro.shader" />
      <None Include="Assets\External Assets\Simple Particle Ribbon\readme_Simple_Particle_Ribbon.txt" />
