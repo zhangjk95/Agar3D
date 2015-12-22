@@ -194,12 +194,17 @@ public class AIController : Controller {
 		else if (state == "corner")
 		{
 			escapeDirection = new Vector3(0, 0, 0);
+			bool EjectorAlive = false;
 			foreach (var escape in Escape)
 			{
 				escapeDirection += SmallestBall.position - escape.position;
+				EjectorAlive = true;
 				Debug.DrawLine(SmallestBall.position, escape.position, Color.red);
 			}
 			if (Vector3.Dot(MoveDirection - SmallestBall.position, escapeDirection) > 0) {
+				state = "normal";
+			}
+			if(!EjectorAlive) {
 				state = "normal";
 			}
 		}
@@ -222,8 +227,7 @@ public class AIController : Controller {
 			if (Vector3.Cross (MoveDirection, shelterPosition).y < 0) {
 				avoidsign = 1;
 			}
-			//Debug.Log (avoidsign);
-			Debug.DrawLine (shelterPosition, SmallestBall.position, Color.blue);
+			Debug.Log (avoidsign);
 			int totalrotation = 0;
 			while (checkShelterCollision(ForecastPoint).HasValue) {
 				Vector3 AvoidDirection = MoveDirection - SmallestBall.position;
@@ -234,7 +238,7 @@ public class AIController : Controller {
 				}
 				AvoidDirection = rotation * AvoidDirection;
 				MoveDirection = SmallestBall.position + AvoidDirection;
-				ForecastPoint = new Ray(SmallestBall.position, MoveDirection - SmallestBall.position).GetPoint(2 * SmallestBall.radius);
+				ForecastPoint = new Ray(SmallestBall.position, MoveDirection - SmallestBall.position).GetPoint( SmallestBall.radius);
 			}
 		}
 
@@ -245,7 +249,8 @@ public class AIController : Controller {
 
 	Vector3? checkShelterCollision(Vector3 ForecastPoint) {
 		foreach (var shelter in Shelters) {
-			if (shelter.radius < SmallestBall.radius && Vector3.Distance (ForecastPoint, shelter.transform.position) < shelter.radius + SmallestBall.radius + 2) {
+			if (shelter.radius < SmallestBall.radius && Vector3.Distance (ForecastPoint, shelter.transform.position) < shelter.radius + SmallestBall.radius ) {
+				Debug.DrawLine (shelter.transform.position, SmallestBall.position, Color.blue);
 				return shelter.transform.position;
 			}
 		}
